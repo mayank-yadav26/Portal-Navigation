@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+   "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+   "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+	<package name="default" extends="json-default">
+		<action name="FilmData"
+			class="com.spring.action.FilmAction" method="getFilmData">
+			<!-- default method for action is execute() -->
+			<result name="success" type="json">
+				<param name ="root">obj</param>
+			</result>
+			<result name="failure">/error.jsp</result>
+		</action>
+		<action name="AddData"
+			class="com.spring.action.FilmAction" method="addFilmData">
+			<!-- default method for action is execute() -->
+			<result name="success">/</result>
+			<result name="failure">/error.jsp</result>
+		</action>
+		<action name="EditData"
+			class="com.spring.action.FilmAction" method="editFilmData">
+			<result name="success">/</result>
+			<result name="failure">/error.jsp</result>
+		</action>
+		<action name="DeleteData"
+			class="com.spring.action.FilmAction" method="deleteFilmData">
+			<result name="success">/</result>
+			<result name="failure">/error.jsp</result>
+		</action>
+		<!--<action name="SearchData"
+			class="struts2Files.SearchDataAction">
+			default method for action is execute()
+			<result name="success"></result>
+			<result name="failure">/error.jsp</result>
+		</action> -->
+	</package>
+</struts>

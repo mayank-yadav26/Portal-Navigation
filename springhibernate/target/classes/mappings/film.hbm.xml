@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.spring.model.Film" table="film">
+
+		<!-- <meta attribute="class-description"> The meta tag is used for describing 
+			your class </meta> -->
+
+		<id name="filmId" type="integer" column="film_id">
+			<generator class="native" />
+		</id>
+
+		<property name="title" column="title" type="string" />
+		<property name="specialFeatures" column="special_features"
+			type="string" />
+		<property name="rating" column="rating" type="string" />
+		<property name="language" column="language_id" type="int" />
+		<!-- <property name="director" column="director" type="string" /> -->
+		<property name="description" column="description"
+			type="string" />
+		<property name="releaseYear" column="release_year"
+			type="string" />
+
+	</class>
+</hibernate-mapping>
+
