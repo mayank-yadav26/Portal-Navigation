@@ -8,7 +8,7 @@ http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context.xsd">
 
-	 <bean class="com.spring.action.FilmAction" name="filmAction">
-		<property name = "filmManager" ref="filmManager"> </property>
+	 <bean class="com.spring.action.NavigationDetailsAction" name="navigationDetailsAction">
+		<property name = "navigationDetailsManager" ref="navigationDetailsManager"> </property>
 	</bean>
 </beans>

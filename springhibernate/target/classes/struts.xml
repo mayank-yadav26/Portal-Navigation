@@ -5,35 +5,29 @@
 
 <struts>
 	<package name="default" extends="json-default">
-		<action name="FilmData"
-			class="com.spring.action.FilmAction" method="getFilmData">
+		<action name="GetNavigationDetails"
+			class="com.spring.action.NavigationDetailsAction" method="getNavigationDetails">
 			<!-- default method for action is execute() -->
 			<result name="success" type="json">
 				<param name ="root">obj</param>
 			</result>
 			<result name="failure">/error.jsp</result>
 		</action>
-		<action name="AddData"
-			class="com.spring.action.FilmAction" method="addFilmData">
+		<action name="AddNavigationDetails"
+			class="com.spring.action.NavigationDetailsAction" method="addNavigationDetails">
 			<!-- default method for action is execute() -->
 			<result name="success">/</result>
 			<result name="failure">/error.jsp</result>
 		</action>
-		<action name="EditData"
-			class="com.spring.action.FilmAction" method="editFilmData">
+		<action name="EditNavigationDetails"
+			class="com.spring.action.NavigationDetailsAction" method="editNavigationDetails">
 			<result name="success">/</result>
 			<result name="failure">/error.jsp</result>
 		</action>
-		<action name="DeleteData"
-			class="com.spring.action.FilmAction" method="deleteFilmData">
+		<action name="DeleteNavigationDetails"
+			class="com.spring.action.NavigationDetailsAction" method="deleteNavigationDetails">
 			<result name="success">/</result>
 			<result name="failure">/error.jsp</result>
 		</action>
-		<!--<action name="SearchData"
-			class="struts2Files.SearchDataAction">
-			default method for action is execute()
-			<result name="success"></result>
-			<result name="failure">/error.jsp</result>
-		</action> -->
 	</package>
 </struts>

@@ -19,7 +19,7 @@ http://www.springframework.org/schema/context/spring-context.xsd">
     
 	<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
 		<property name = "driverClassName" value="com.mysql.jdbc.Driver"></property>
-		<property name = "url" value="jdbc:mysql://localhost:3306/sakila"></property>
+		<property name = "url" value="jdbc:mysql://localhost:3306/portal_navigation"></property>
 		<property name = "username" value="root"></property>
 		<property name = "password" value="root"></property>
 	</bean>

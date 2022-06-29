@@ -8,8 +8,9 @@ http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean class="com.spring.manager.impl.FilmManagerImpl" name="filmManager">
-		<property name = "filmDao" ref="filmDao"> </property>
+
+	<bean class="com.spring.manager.impl.NavigationDetailsManagerImpl" name="navigationDetailsManager">
+		<property name = "navigationDetailsDao" ref="navigationDetailsDao"> </property>
 	</bean>
 	
 </beans>

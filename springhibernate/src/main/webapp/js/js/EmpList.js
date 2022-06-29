@@ -29,7 +29,7 @@ Ext.define('GridStore', {
 	pageSize : 10,
 	proxy : {
 		type : 'ajax',
-		url : '/springhibernate/FilmData.action',
+		url : '/portal_navigation/GetNavigationDetails.action',
 		reader : {
 			type : 'json',
 			rootProperty : 'data',
@@ -191,7 +191,7 @@ function grid() {
 function addData(grid) {
 	var form = new Ext.form.Panel(
 			{
-				url : '/springhibernate/AddData.action',
+				url : '/portal_navigation/AddNavigationDetails.action',
 				width : 500,
 				title : 'Add Film',
 				floating : true,
@@ -220,7 +220,7 @@ function addData(grid) {
 					typeAhead : true,
 					queryMode : 'local',
 				}, {
-					allowBlank : false,
+					allowBlank : true,
 					fieldLabel : 'Parameters',
 					name : 'parameters',
 					xtype : 'textareafield',
@@ -228,7 +228,7 @@ function addData(grid) {
 					width : '100%',
 					id : 'parameters',
 				} , {
-					allowBlank : false,
+					allowBlank : true,
 					fieldLabel : 'Request Headers',
 					name : 'requestHeaders',
 					xtype : 'textareafield',
@@ -290,7 +290,7 @@ function deleteData(record) {
 	});
 	navigationId = navigationId.join();
 	Ext.Ajax.request({
-		url : '/springhibernate/DeleteData.action',
+		url : '/portal_navigation/DeleteNavigationDetails.action',
 		method : 'POST',
 		params : {
 			"navigationId" : navigationId
@@ -323,7 +323,7 @@ function deleteData(record) {
 function editData(record) {
 	var form = new Ext.form.Panel(
 			{
-				url : '/springhibernate/EditData.action',
+				url : '/portal_navigation/EditNavigationDetails.action',
 				width : 500,
 				title : 'Edit Navigation',
 				floating : true,

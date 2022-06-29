@@ -1,0 +1,23 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.spring.model.NavigationDetails" table="navigation_details">
+
+		<!-- <meta attribute="class-description"> The meta tag is used for describing 
+			your class </meta> -->
+
+		<id name="navigationId" type="integer" column="navigation_id">
+			<generator class="native" />
+		</id>
+
+		<property name="baseUrl" column="base_url" type="string" />
+		<property name="requestType" column="request_type" type="string" />
+		<property name="parameters" column="parameters" type="string" />
+		<property name="requestHeaders" column="request_headers" type="string" />
+
+	</class>
+</hibernate-mapping>
+
