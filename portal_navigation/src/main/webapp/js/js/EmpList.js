@@ -284,16 +284,16 @@ function addData(grid) {
 }
 
 function deleteData(record) {
-	var navigationId = [];
+	var navigationIds = [];
 	record.forEach(function(item, index) {
-		navigationId.push(item.data.navigationId);
+		navigationIds.push(item.data.navigationId);
 	});
-	navigationId = navigationId.join();
+	navigationIds = navigationIds.join();
 	Ext.Ajax.request({
 		url : '/portal_navigation/DeleteNavigationDetails.action',
 		method : 'POST',
 		params : {
-			"navigationId" : navigationId
+			"navigationIds" : navigationIds
 		},
 		success : function(response) {
 			var obj = JSON.parse(response.responseText);
@@ -335,13 +335,14 @@ function editData(record) {
 					allowBlank : false,
 					fieldLabel : 'Navigation Id',
 					name : 'navigationId',
+					id : 'navigationId',
 					width : '100%',
 					value : record[0].data.navigationId,
 					hidden : true
 				}, {
 					allowBlank : false,
 					fieldLabel : 'Base Url',
-					name : 'title',
+					name : 'baseUrl',
 					msgTarget : 'under',
 					width : '100%',
 					allowBlank : false,
@@ -361,7 +362,7 @@ function editData(record) {
 					queryMode : 'local',
 					value : record[0].data.requestType
 				}, {
-					allowBlank : false,
+					allowBlank : true,
 					fieldLabel : 'Parameters',
 					name : 'parameters',
 					xtype : 'textareafield',
@@ -370,7 +371,7 @@ function editData(record) {
 					id : 'parameters',
 					value : record[0].data.parameters
 				} , {
-					allowBlank : false,
+					allowBlank : true,
 					fieldLabel : 'Request Headers',
 					name : 'requestHeaders',
 					xtype : 'textareafield',

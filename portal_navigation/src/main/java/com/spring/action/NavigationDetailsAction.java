@@ -19,7 +19,8 @@ public class NavigationDetailsAction {
 	private String total;
 	private Map<String , Object> obj = new HashMap<String, Object>();
 	
-	private String navigationId;
+	private int navigationId;
+	private String navigationIds;
 	private String baseUrl;
 	private String requestType;
 	private String parameters;
@@ -57,6 +58,30 @@ public class NavigationDetailsAction {
 		}
 		return "success";
 	}	
+	
+	public String editNavigationDetails() throws Exception {
+		System.out.println("In editNavigationDetails Method");
+		try {
+			navigationDetailsManager.updateNavigationDetails(getNavigationId(),getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
+		}     
+		catch(Exception e){
+			System.out.println("Error in editNavigationDetails : "+e.getMessage());
+			e.printStackTrace();
+		}
+		return "success";
+	}
+	
+	public String deleteNavigationDetails() throws Exception {
+		System.out.println("In deleteNavigationDetails Method");
+		try {
+			navigationDetailsManager.deleteNavigationDetails(getNavigationIds());
+		}     
+		catch(Exception e){
+			System.out.println("Error in deleteNavigationDetails : "+e.getMessage());
+			e.printStackTrace();
+		}
+		return "success";
+	}
 	
 	private void setTotalCount() {
 		try {		
@@ -115,10 +140,10 @@ public class NavigationDetailsAction {
 		this.total = total;
 	}
 
-	public String getNavigationId() {
+	public int getNavigationId() {
 		return navigationId;
 	}
-	public void setNavigationId(String navigationId) {
+	public void setNavigationId(int navigationId) {
 		this.navigationId = navigationId;
 	}
 	public String getBaseUrl() {
@@ -150,6 +175,14 @@ public class NavigationDetailsAction {
 	}
 	public void setObj(Map<String, Object> obj) {
 		this.obj = obj;
+	}
+
+	public String getNavigationIds() {
+		return navigationIds;
+	}
+
+	public void setNavigationIds(String navigationIds) {
+		this.navigationIds = navigationIds;
 	}
 	
 }

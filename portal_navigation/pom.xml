@@ -6,7 +6,7 @@
 	<artifactId>portal_navigation</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>springhibernate Maven Webapp</name>
+	<name>portal_navigation Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 
 	<!-- This is important to set java version 1.8 -->
@@ -87,7 +87,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>springhibernate</finalName>
+		<finalName>portal_navigation</finalName>
 		<plugins>
 	 <!-- these plugins used beacause on ubuntu java 18 is used and it pom was showing error-->
 		<plugin>

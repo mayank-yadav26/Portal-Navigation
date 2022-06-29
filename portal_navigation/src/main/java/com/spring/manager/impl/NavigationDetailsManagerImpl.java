@@ -23,7 +23,13 @@ public class NavigationDetailsManagerImpl implements NavigationDetailsManager{
 	public void saveNavigationDetails(String baseUrl, String requestType, String parameters, String requestHeaders) {
 		navigationDetailsDao.saveNavigationDetails(baseUrl,requestType,parameters,requestHeaders);
 	}
-
+	
+	@Override
+	public void updateNavigationDetails(int navigationId, String baseUrl, String requestType, String parameters,
+			String requestHeaders) {
+		navigationDetailsDao.updateNavigationDetails(navigationId,baseUrl,requestType,parameters,requestHeaders);
+		
+	}
 	public NavigationDetailsDao getNavigationDetailsDao() {
 		return navigationDetailsDao;
 	}
@@ -31,4 +37,12 @@ public class NavigationDetailsManagerImpl implements NavigationDetailsManager{
 	public void setNavigationDetailsDao(NavigationDetailsDao navigationDetailsDao) {
 		this.navigationDetailsDao = navigationDetailsDao;
 	}
+
+	@Override
+	public void deleteNavigationDetails(String navigationIds) {
+		navigationDetailsDao.deleteNavigationDetails(navigationIds);
+		
+	}
+
+
 }

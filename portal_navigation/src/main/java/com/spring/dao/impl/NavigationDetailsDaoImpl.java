@@ -1,8 +1,10 @@
 package com.spring.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
@@ -68,6 +70,55 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			System.out.println("Error in saveNavigationDetails : "+e.getMessage());
 		}
 	}
+	
+	@Override
+	public void updateNavigationDetails(int navigationId, String baseUrl, String requestType, String parameters,
+			String requestHeaders) {
+		System.out.println("Inside updateNavigationDetails");
+		Session session = null;
+		try {
+			session = getSession();
+			Transaction txn = session.beginTransaction();
+			NavigationDetails navigationDetails = (NavigationDetails)session.get(NavigationDetails.class, navigationId); 
+			navigationDetails.setBaseUrl(baseUrl);
+			navigationDetails.setRequestType(requestType);
+			navigationDetails.setParameters(parameters);
+			navigationDetails.setRequestHeaders(requestHeaders);
+			getHibernateTemplate().update(navigationDetails);
+			txn.commit();
+		}catch(Exception e) {
+			System.out.println("Error in updateNavigationDetails : "+e.getMessage());
+		}finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+	}
+	
+	@Override
+	public void deleteNavigationDetails(String navigationIds) {
+		System.out.println("In deleteNavigationDetails Method");
+		Session session = null;
+		String hqlSelectQuery = "DELETE FROM NavigationDetails nd WHERE nd.navigationId IN :idList";
+		ArrayList<Integer> navigationIdsListInt = new ArrayList<>();
+		try {
+			String[] navigationIdsArr = navigationIds.split(",");
+			for(String str : navigationIdsArr) {
+				navigationIdsListInt.add(Integer.parseInt(str));
+			}
+			session = getSession();
+			Transaction txn = session.beginTransaction();
+			Query query = session.createQuery(hqlSelectQuery);
+			query.setParameterList("idList", navigationIdsListInt);
+			query.executeUpdate();
+			txn.commit();
+		}     
+		catch(Exception e){
+			System.out.println("Error in deleteNavigationDetails : "+e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
 	public HibernateTemplate getHibernateTemplate() {
 		return hibernateTemplate;
 	}
