@@ -15,19 +15,21 @@
 		</action>
 		<action name="AddNavigationDetails"
 			class="com.spring.action.NavigationDetailsAction" method="addNavigationDetails">
-			<!-- default method for action is execute() -->
-			<result name="success">/</result>
-			<result name="failure">/error.jsp</result>
+			<result name="success" type="json">
+				<param name ="root">obj</param>
+			</result>
 		</action>
 		<action name="EditNavigationDetails"
 			class="com.spring.action.NavigationDetailsAction" method="editNavigationDetails">
-			<result name="success">/</result>
-			<result name="failure">/error.jsp</result>
+			<result name="success" type="json">
+				<param name ="root">obj</param>
+			</result>
 		</action>
 		<action name="DeleteNavigationDetails"
 			class="com.spring.action.NavigationDetailsAction" method="deleteNavigationDetails">
-			<result name="success">/</result>
-			<result name="failure">/error.jsp</result>
+			<result name="success" type="json">
+				<param name ="root">obj</param>
+			</result>
 		</action>
 	</package>
 </struts>

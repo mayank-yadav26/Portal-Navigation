@@ -147,6 +147,7 @@ function grid() {
 						'-',
 						{
 							iconCls : 'fa fa-plus-circle',
+							id : 'addbtn',
 							text : 'Add',
 							handler : function() {
 								addData(dataGrid);
@@ -178,6 +179,27 @@ function grid() {
 									fn : function(btn) {
 										if (btn === 'yes') {
 											deleteData(data);
+										}
+									}
+								});
+							}
+						},
+						'-',
+						{
+							iconCls : 'fa fa-play',
+							text : 'RUN',
+							id : 'runbtn',
+							disabled : true,
+							handler : function() {
+								Ext.Msg
+								.show({
+									title : 'Are you sure?',
+									message : 'Are you sure that you want to run these records?',
+									buttons : Ext.Msg.YESNOCANCEL,
+									icon : Ext.Msg.QUESTION,
+									fn : function(btn) {
+										if (btn === 'yes') {
+											runData(data);
 										}
 									}
 								});
@@ -244,30 +266,23 @@ function addData(grid) {
 						formBind : true,
 						handler : function() {
 							var formData = this.up('form').getForm();
-							form
-							.getForm()
-							.submit(
+							form.getForm().submit(
 									{
 										method : 'POST',
 										waitTitle : 'Connecting',
 										waitMsg : 'Adding Data...',
-										success : function(form,
-												action) {
-											Ext.Msg
-											.alert(
-													'Success',
-													action.result.successresponse.message);
+										success : function(form,action) {
+											console.log("Success");
+											//Ext.Msg.alert('Success',action.result.successresponse.message);
 											form.reset();
-											Ext.getCmp('grid')
-											.getStore()
-											.reload();
+											Ext.getCmp("addbtn").setIconCls('fa fa-play');
+											Ext.getCmp('grid').getStore().reload();
 										},
-										failure : function(form,
-												action) {
-											Ext.Msg
-											.alert(
-													'Failure',
-													action.result.successresponse.message);
+										failure : function(form,action) {
+											console.log("Failed");
+											form.reset();
+											Ext.getCmp("addbtn").setIconCls('fa fa-play');
+											//Ext.Msg.alert('Failure',action.result.successresponse.message);
 										}
 									});
 						}
@@ -296,25 +311,29 @@ function deleteData(record) {
 			"navigationIds" : navigationIds
 		},
 		success : function(response) {
+			console.log(response);
 			var obj = JSON.parse(response.responseText);
 			if (obj.success) {
-				Ext.Msg.alert('Success', obj.successresponse.message);
+				//Ext.Msg.alert('Success', obj.successresponse.message);
 				Ext.getCmp('grid').getStore().reload();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
 			} else {
-				Ext.Msg.alert('Failure', obj.successresponse.message);
+				console.log("Failed in delete");
+				//Ext.Msg.alert('Failure', obj.successresponse.message);
 			}
 		},
 		failure : function(response) {
+			console.log(response);
 			var obj = JSON.parse(response.responseText);
 			if (obj.success) {
-				Ext.Msg.alert('Success', obj.successresponse.message);
+				//Ext.Msg.alert('Success', obj.successresponse.message);
 				Ext.getCmp('grid').getStore().reload();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
 			} else {
-				Ext.Msg.alert('Failure', obj.successresponse.message);
+				console.log("Failed in delete");
+				//Ext.Msg.alert('Failure', obj.successresponse.message);
 			}
 		}
 	});
@@ -387,31 +406,21 @@ function editData(record) {
 						disabled : true,
 						formBind : true,
 						handler : function() {
-							form
-							.getForm()
-							.submit(
+							form.getForm().submit(
 									{
 										method : 'POST',
 										waitTitle : 'Connecting',
 										waitMsg : 'Updating Data...',
 										success : function(form,action) {
-											Ext.Msg
-											.alert(
-													'Success',
-													action.result.successresponse.message);
-											Ext.getCmp('grid').getStore()
-											.reload();
-											Ext.getCmp("editbtn")
-											.disable();
-											Ext.getCmp("deletebtn")
-											.disable();
+											//Ext.Msg.alert('Success',action.result.successresponse.message);
+											Ext.getCmp('grid').getStore().reload();
+											Ext.getCmp("editbtn").disable();
+											Ext.getCmp("deletebtn").disable();
+											form.close();
 										},
-										failure : function(form,
-												action) {
-											Ext.Msg
-											.alert(
-													'Failure',
-													action.result.successresponse.message);
+										failure : function(form,action) {
+											form.close();
+											//Ext.Msg.alert('Failure',action.result.successresponse.message);
 										}
 									});
 						}
@@ -426,3 +435,44 @@ function editData(record) {
 					]
 			}).show();
 }
+
+function runData(record) {
+	var navigationIds = [];
+	record.forEach(function(item, index) {
+		navigationIds.push(item.data.navigationId);
+	});
+	navigationIds = navigationIds.join();
+	Ext.Ajax.request({
+		url : '/portal_navigation/RunNavigationDetails.action',
+		method : 'POST',
+		params : {
+			"navigationIds" : navigationIds
+		},
+		success : function(response) {
+			var obj = JSON.parse(response.responseText);
+			if (obj.success) {
+				//Ext.Msg.alert('Success', obj.successresponse.message);
+				Ext.getCmp('grid').getStore().reload();
+				Ext.getCmp("runbtn").disable();
+				Ext.getCmp("deletebtn").disable();
+				Ext.getCmp("editbtn").disable();
+			} else {
+				//Ext.Msg.alert('Failure', obj.successresponse.message);
+			}
+		},
+		failure : function(response) {
+			var obj = JSON.parse(response.responseText);
+			if (obj.success) {
+				//Ext.Msg.alert('Success', obj.successresponse.message);
+				Ext.getCmp('grid').getStore().reload();
+				Ext.getCmp("runbtn").disable();
+				Ext.getCmp("deletebtn").disable();
+				Ext.getCmp("editbtn").disable();
+			} else {
+				//Ext.Msg.alert('Failure', obj.successresponse.message);
+			}
+		}
+	});
+}
+
+

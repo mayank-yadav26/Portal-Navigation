@@ -17,7 +17,8 @@ public class NavigationDetailsAction {
 	private String start;
 	private String data;
 	private String total;
-	private Map<String , Object> obj = new HashMap<String, Object>();
+	private Map<String , Object> obj= new HashMap<String, Object>();
+	private boolean success;
 	
 	private int navigationId;
 	private String navigationIds;
@@ -37,8 +38,9 @@ public class NavigationDetailsAction {
 			navigationDetailsList=navigationDetailsManager.getNavigationDetailsList(getLimit(),getStart());
 			temp.put("data", navigationDetailsList);
 			temp.put("total", totalCount);
-			obj = temp;
-			System.out.println("data is "+temp.get("data"));
+		    obj = temp;
+			//System.out.println("data is "+temp.get("data"));
+			setSuccess(true);
 		}     
 		catch(Exception e){
 			System.out.println("Error in getFilmData : "+e.getMessage());
@@ -51,6 +53,7 @@ public class NavigationDetailsAction {
 		System.out.println("In addNavigationDetails Method");
 		try {
 			navigationDetailsManager.saveNavigationDetails(getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
+			obj.put("success", true);
 		}     
 		catch(Exception e){
 			System.out.println("Error in addNavigationDetails : "+e.getMessage());
@@ -63,6 +66,7 @@ public class NavigationDetailsAction {
 		System.out.println("In editNavigationDetails Method");
 		try {
 			navigationDetailsManager.updateNavigationDetails(getNavigationId(),getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
+			obj.put("success", true);
 		}     
 		catch(Exception e){
 			System.out.println("Error in editNavigationDetails : "+e.getMessage());
@@ -75,6 +79,7 @@ public class NavigationDetailsAction {
 		System.out.println("In deleteNavigationDetails Method");
 		try {
 			navigationDetailsManager.deleteNavigationDetails(getNavigationIds());
+			obj.put("success", true);
 		}     
 		catch(Exception e){
 			System.out.println("Error in deleteNavigationDetails : "+e.getMessage());
@@ -183,6 +188,14 @@ public class NavigationDetailsAction {
 
 	public void setNavigationIds(String navigationIds) {
 		this.navigationIds = navigationIds;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 	
 }
