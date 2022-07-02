@@ -17,4 +17,6 @@ public interface NavigationDetailsManager {
 
 	void deleteNavigationDetails(String navigationIds);
 
+	void runNavigationDetails(String navigationIds);
+
 }

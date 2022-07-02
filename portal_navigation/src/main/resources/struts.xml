@@ -31,5 +31,11 @@
 				<param name ="root">obj</param>
 			</result>
 		</action>
+		<action name="RunNavigationDetails"
+			class="com.spring.action.NavigationDetailsAction" method="runNavigationDetails">
+			<result name="success" type="json">
+				<param name ="root">obj</param>
+			</result>
+		</action>
 	</package>
 </struts>

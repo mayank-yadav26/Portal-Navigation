@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.spring.agent.NavigationAgent;
 import com.spring.dao.NavigationDetailsDao;
 import com.spring.model.NavigationDetails;
 
@@ -15,6 +16,13 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 	HibernateTemplate hibernateTemplate;
 	public Session getSession(){
 		return hibernateTemplate.getSessionFactory().openSession();
+	}
+	
+	public HibernateTemplate getHibernateTemplate() {
+		return hibernateTemplate;
+	}
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -29,6 +37,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			query.setFirstResult(Integer.parseInt(start));
 			query.setMaxResults(Integer.parseInt(limit));
 			navigationDetailsList=(ArrayList<NavigationDetails>) query.list();
+			navigationDetailsList=(ArrayList<NavigationDetails>)getHibernateTemplate().loadAll(NavigationDetails.class);
 		}catch(Exception e) {
 			System.out.println("Error in getNavigationDetailsList : "+e.getMessage());
 		}finally {
@@ -119,11 +128,33 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 		}
 	}
 	
-	public HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
-	}
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
+	@Override
+	public void runNavigationDetails(String navigationIds) {
+		System.out.println(navigationIds);
+		System.out.println("In runNavigationDetails Method");
+		Session session = null;
+		String hqlSelectQuery = "FROM NavigationDetails nd WHERE nd.navigationId IN :idList";
+		ArrayList<Integer> navigationIdsListInt = new ArrayList<>();
+		ArrayList<NavigationDetails> navigationDetailsList = new ArrayList<NavigationDetails>();
+		try {
+			String[] navigationIdsArr = navigationIds.split(",");
+			for(String str : navigationIdsArr) {
+				navigationIdsListInt.add(Integer.parseInt(str));
+			}
+			session = getSession();
+			Query query = session.createQuery(hqlSelectQuery);
+			query.setParameterList("idList", navigationIdsListInt);
+			navigationDetailsList=(ArrayList<NavigationDetails>) query.list();
+			NavigationAgent navigationAgent = new NavigationAgent();
+			boolean result = navigationAgent.doNavigation(navigationDetailsList);
+			if(result) {
+				System.out.println("Navigation is success");
+			}
+		}     
+		catch(Exception e){
+			System.out.println("Error in runNavigationDetails : "+e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 }

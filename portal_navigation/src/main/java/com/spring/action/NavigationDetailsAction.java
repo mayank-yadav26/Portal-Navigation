@@ -88,6 +88,19 @@ public class NavigationDetailsAction {
 		return "success";
 	}
 	
+	public String runNavigationDetails() throws Exception {
+		System.out.println("In runNavigationDetails Method");
+		try {
+			navigationDetailsManager.runNavigationDetails(getNavigationIds());
+			obj.put("success", true);
+		}     
+		catch(Exception e){
+			System.out.println("Error in runNavigationDetails : "+e.getMessage());
+			e.printStackTrace();
+		}
+		return "success";
+	}
+	
 	private void setTotalCount() {
 		try {		
 			totalCount = navigationDetailsManager.getTotalEntires()+"";

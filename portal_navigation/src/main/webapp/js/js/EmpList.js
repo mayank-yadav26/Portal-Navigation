@@ -26,7 +26,7 @@ Ext.define('GridStore', {
 	storeId : "gridStoreId",
 	autoLoad : true,
 	model : "Grid",
-	pageSize : 10,
+	//pageSize : 10,
 	proxy : {
 		type : 'ajax',
 		url : '/portal_navigation/GetNavigationDetails.action',
@@ -34,7 +34,7 @@ Ext.define('GridStore', {
 			type : 'json',
 			rootProperty : 'data',
 			totalProperty : 'total',
-			enablePaging : 'true'
+			//enablePaging : 'true'
 		}
 	}
 });
@@ -42,13 +42,13 @@ Ext.define('GridStore', {
 var requestTypeStore = Ext.create('requestTypeStore');
 var activityStore = Ext.create('GridStore');
 //for pagination
-activityStore.load({
+/*activityStore.load({
 	params : {
 		start : 0,
 		limit : 10,
 		query : "select"
 	}
-});
+});*/
 
 function resetFields(form) {
 	form.getForm().reset();
@@ -61,7 +61,7 @@ function grid() {
 		renderTo : Ext.getBody(),
 		id : 'grid',
 		width : '100%',
-		height : 480,
+		height : 720,
 		store : activityStore,
 		title : 'Navigation Grid',
 		columns : [ {
@@ -114,8 +114,10 @@ function grid() {
 					}
 					if (record.length > 0) {
 						Ext.getCmp("deletebtn").enable();
+						Ext.getCmp("runbtn").enable();
 					} else {
 						Ext.getCmp("deletebtn").disable();
+						Ext.getCmp("runbtn").disable();
 					}
 					data = record;
 				},
@@ -128,8 +130,10 @@ function grid() {
 					}
 					if (record.length > 0) {
 						Ext.getCmp("deletebtn").enable();
+						Ext.getCmp("runbtn").enable();
 					} else {
 						Ext.getCmp("deletebtn").disable();
+						Ext.getCmp("runbtn").disable();
 					}
 					data = record;
 				}
@@ -137,11 +141,11 @@ function grid() {
 		},
 		tbar : new Ext.PagingToolbar(
 				{
-					inputItemWidth : 50,
-					pageSize : 10,
+					//inputItemWidth : 50,
+					//pageSize : 10,
 					store : activityStore,
 					displayInfo : true,
-					displayMsg : 'Displaying topics {0} - {1} of {2}',
+					displayMsg : 'Total items : {2} ',
 					emptyMsg : "No topics to display",
 					items : [
 						'-',
@@ -264,7 +268,7 @@ function addData(grid) {
 						text : 'Save',
 						disabled : true,
 						formBind : true,
-						handler : function() {
+						handler : function(button,e) {
 							var formData = this.up('form').getForm();
 							form.getForm().submit(
 									{
@@ -275,13 +279,12 @@ function addData(grid) {
 											console.log("Success");
 											//Ext.Msg.alert('Success',action.result.successresponse.message);
 											form.reset();
-											Ext.getCmp("addbtn").setIconCls('fa fa-play');
 											Ext.getCmp('grid').getStore().reload();
+											button.up('form').close();
 										},
 										failure : function(form,action) {
 											console.log("Failed");
 											form.reset();
-											Ext.getCmp("addbtn").setIconCls('fa fa-play');
 											//Ext.Msg.alert('Failure',action.result.successresponse.message);
 										}
 									});
@@ -405,7 +408,7 @@ function editData(record) {
 						text : 'Save',
 						disabled : true,
 						formBind : true,
-						handler : function() {
+						handler : function(button,e) {
 							form.getForm().submit(
 									{
 										method : 'POST',
@@ -416,10 +419,10 @@ function editData(record) {
 											Ext.getCmp('grid').getStore().reload();
 											Ext.getCmp("editbtn").disable();
 											Ext.getCmp("deletebtn").disable();
-											form.close();
+											button.up('form').close();
 										},
 										failure : function(form,action) {
-											form.close();
+											console.log("Updating of data failed");
 											//Ext.Msg.alert('Failure',action.result.successresponse.message);
 										}
 									});
