@@ -45,8 +45,8 @@ public class NavigationDetailsManagerImpl implements NavigationDetailsManager{
 	}
 
 	@Override
-	public void runNavigationDetails(String navigationIds) {
-		navigationDetailsDao.runNavigationDetails(navigationIds);
+	public String runNavigationDetails(String navigationIds) {
+		return navigationDetailsDao.runNavigationDetails(navigationIds);
 	}
 
 }

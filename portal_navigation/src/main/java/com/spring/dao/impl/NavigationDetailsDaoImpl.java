@@ -129,9 +129,10 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 	}
 	
 	@Override
-	public void runNavigationDetails(String navigationIds) {
+	public String runNavigationDetails(String navigationIds) {
 		System.out.println(navigationIds);
 		System.out.println("In runNavigationDetails Method");
+		String docLink="";
 		Session session = null;
 		String hqlSelectQuery = "FROM NavigationDetails nd WHERE nd.navigationId IN :idList";
 		ArrayList<Integer> navigationIdsListInt = new ArrayList<>();
@@ -146,8 +147,8 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			query.setParameterList("idList", navigationIdsListInt);
 			navigationDetailsList=(ArrayList<NavigationDetails>) query.list();
 			NavigationAgent navigationAgent = new NavigationAgent();
-			boolean result = navigationAgent.doNavigation(navigationDetailsList);
-			if(result) {
+			docLink = navigationAgent.doNavigation(navigationDetailsList);
+			if(!docLink.isEmpty()) {
 				System.out.println("Navigation is success");
 			}
 		}     
@@ -155,6 +156,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			System.out.println("Error in runNavigationDetails : "+e.getMessage());
 			e.printStackTrace();
 		}
+		return docLink;
 	}
 
 }

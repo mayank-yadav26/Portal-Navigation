@@ -462,6 +462,12 @@ function runData(record) {
 			} else {
 				//Ext.Msg.alert('Failure', obj.successresponse.message);
 			}
+			console.log("obj is : "+obj);
+			console.log("response : "+response);
+			//location.href="http://www.google.com";
+			//for opening link in new tab;
+			window.open("http://127.0.0.1:8887/"+obj.docLink);
+			//location.assign("http://www.google.com");
 		},
 		failure : function(response) {
 			var obj = JSON.parse(response.responseText);

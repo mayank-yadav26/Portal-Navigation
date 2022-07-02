@@ -17,6 +17,6 @@ public interface NavigationDetailsDao {
 
 	void deleteNavigationDetails(String navigationIds);
 
-	void runNavigationDetails(String navigationIds);
+	String runNavigationDetails(String navigationIds);
 
 }

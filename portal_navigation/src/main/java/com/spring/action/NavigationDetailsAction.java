@@ -91,8 +91,9 @@ public class NavigationDetailsAction {
 	public String runNavigationDetails() throws Exception {
 		System.out.println("In runNavigationDetails Method");
 		try {
-			navigationDetailsManager.runNavigationDetails(getNavigationIds());
+			String docLink = navigationDetailsManager.runNavigationDetails(getNavigationIds());
 			obj.put("success", true);
+			obj.put("docLink", docLink);
 		}     
 		catch(Exception e){
 			System.out.println("Error in runNavigationDetails : "+e.getMessage());

@@ -1,8 +1,13 @@
 package com.spring.agent;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,15 +28,17 @@ public class NavigationAgent {
 	private static final String GET = "GET";
 	private static final String POST = "POST";
 	
-	public boolean doNavigation(ArrayList<NavigationDetails> navigationDetailsList) {
+	public String doNavigation(ArrayList<NavigationDetails> navigationDetailsList) {
+		String baseUrl = "";
+		String requestType = "";
+		String parameters = "";
+		String requestHeaders = "";
+		String browserResp = "";
+		String parentPath = "/home/mayank/Documents/";
+		String fileName = "responce.html";
 		try {
 			// Creating a HttpClient object
 			httpclient = HttpClients.createDefault();
-			String baseUrl = "";
-			String requestType = "";
-			String parameters = "";
-			String requestHeaders = "";
-			String browserResp = "";
 			for(NavigationDetails navigationDetails : navigationDetailsList) {
 				baseUrl = navigationDetails.getBaseUrl();
 				requestType = navigationDetails.getRequestType();
@@ -49,20 +56,21 @@ public class NavigationAgent {
 					// Executing the Get request
 					HttpResponse httpresponse = httpclient.execute(httpget);
 					System.out.println(httpresponse.getStatusLine().toString()); 
-					browserResp = writeToFile(httpresponse);
+					browserResp = writeToFile(httpresponse,parentPath+fileName);
 				}else {
 					HttpPost httpPost = new HttpPost(baseUrl);
 					List<BasicNameValuePair> nameValuePairs = new ArrayList<BasicNameValuePair>();
 					addNameValuePairs(nameValuePairs,parameters);
 					httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 					HttpResponse httpresponsePost = httpclient.execute(httpPost);
-					String browserRespPost = writeToFile(httpresponsePost);
+					String browserRespPost = writeToFile(httpresponsePost,parentPath+fileName);
 				}
 			}
 		}catch(Exception e) {
 			System.out.println("Error in doNavigation method : "+e.getMessage());
+			e.printStackTrace();
 		}
-		return false;
+		return fileName;
 	}
 	private static void addNameValuePairs(List<BasicNameValuePair> nameValuePairs, String inputStr) {
 		String strArr[] = inputStr.split("\n");
@@ -104,32 +112,35 @@ public class NavigationAgent {
 		}
 	}
 
-	private static String writeToFile(HttpResponse httpresponse) {
+	private static String writeToFile(HttpResponse httpresponse,String filePath) {
 		// saving pod doc
 		String browserResponce="";
-		String parentPath = "/home/mayank/Documents/";
 		//read in chunks of 2KB
 		byte[] buffer = new byte[2048];
 		int bytesRead = 0;
 		DataOutputStream os = null;
 		try{
 			InputStream is = httpresponse.getEntity().getContent();
+			InputStream bufferedIs = new BufferedInputStream(is);
 			try{
-				os = new DataOutputStream(new FileOutputStream(parentPath+"responce"+""+".html"));
-				while((bytesRead = is.read(buffer)) != -1){
+				os = new DataOutputStream(new FileOutputStream(filePath));
+				while((bytesRead = bufferedIs.read(buffer)) != -1){
 					os.write(buffer, 0, bytesRead);
 				}     
 			}
 			catch(Exception e) {
 				System.out.println("Exception : "+e.getMessage());
 			}
-			HttpEntity responceEntity = httpresponse.getEntity();
-			if (responceEntity != null) {
-				browserResponce += EntityUtils.toString(responceEntity);
+			File file = new File(filePath);
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String line="";
+			while((line=br.readLine())!=null) {
+				browserResponce+=line+"\n";
 			}
 		}
 		catch(Exception ex){
 			System.out.println("Exception : "+ex.getMessage());
+			ex.printStackTrace();
 		}
 		return browserResponce;
 	}
@@ -145,7 +156,7 @@ public class NavigationAgent {
 				if(tempNum==1) {
 					url+="&"+temp.trim();
 				}else {
-					url+="="+temp.trim();
+					url+="="+temp.trim().replace(" ", "+");
 				}
 			}
 		}
