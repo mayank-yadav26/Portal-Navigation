@@ -123,9 +123,11 @@ function grid() {
 					if (record.length > 0) {
 						Ext.getCmp("deletebtn").enable();
 						Ext.getCmp("runbtn").enable();
+						Ext.getCmp("navigationFile").enable();
 					} else {
 						Ext.getCmp("deletebtn").disable();
 						Ext.getCmp("runbtn").disable();
+						Ext.getCmp("navigationFile").disable();
 					}
 					data = record;
 				},
@@ -139,9 +141,11 @@ function grid() {
 					if (record.length > 0) {
 						Ext.getCmp("deletebtn").enable();
 						Ext.getCmp("runbtn").enable();
+						Ext.getCmp("navigationFile").enable();
 					} else {
 						Ext.getCmp("deletebtn").disable();
 						Ext.getCmp("runbtn").disable();
+						Ext.getCmp("navigationFile").disable();
 					}
 					data = record;
 				}

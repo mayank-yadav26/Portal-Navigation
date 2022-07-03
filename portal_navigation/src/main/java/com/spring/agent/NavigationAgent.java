@@ -2,10 +2,13 @@ package com.spring.agent;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
@@ -34,8 +37,7 @@ public class NavigationAgent {
 	private static final String GET = "GET";
 	private static final String POST = "POST";
 	private static String browserResponce="";
-	private StringBuilder forXmlFileSb;
-	
+
 	public String doNavigation(ArrayList<NavigationDetails> navigationDetailsList) {
 		String baseUrl = "";
 		String requestType = "";
@@ -155,7 +157,7 @@ public class NavigationAgent {
 
 	private static String writeToFile(HttpResponse httpresponse,String filePath) {
 		// saving pod doc
-		
+
 		//read in chunks of 2KB
 		byte[] buffer = new byte[2048];
 		int bytesRead = 0;
@@ -211,46 +213,65 @@ public class NavigationAgent {
 		String requestHeaders = "";
 		String browserResp = "";
 		String parentPath = "/home/mayank/Documents/";
-		String fileName = "";
+		String fileName = "NavigationFile.xml";
 		String navigationName="";
+		StringBuilder forXmlFileSb = new StringBuilder();
 		try {
+			forXmlFileSb.append("<navigations>");
 			for(NavigationDetails navigationDetails : navigationDetailsList) {
 				navigationName=navigationDetails.getNavigationName();
-				fileName = navigationName+".xml";
 				baseUrl = navigationDetails.getBaseUrl();
 				requestType = navigationDetails.getRequestType();
 				parameters = navigationDetails.getParameters();
 				requestHeaders = navigationDetails.getRequestHeaders();
-				forXmlFileSb.append("\n\t<"+requestType+" name=\""+navigationName+"\" url=\""+baseUrl+"\">");
+				forXmlFileSb.append("\n\t<"+requestType.toLowerCase()+" name=\""+navigationName+"\" url=\""+baseUrl+"\">");
 				addFields(forXmlFileSb,parameters);
-				forXmlFileSb.append("\n\t<"+requestType+"/>");
-				appendToFile(forXmlFileSb);
+				forXmlFileSb.append("\n\t</"+requestType.toLowerCase()+">\n");
 			}
+			writeToFile(forXmlFileSb.append("</navigations>"));
 		}catch(Exception e) {
 			System.out.println("Error in doNavigation method : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return fileName;
 	}
-	private void appendToFile(StringBuilder forXmlFileSb2) {
-		// TODO Auto-generated method stub
-		
+	private void writeToFile(StringBuilder forXmlFileSb) throws IOException {
+		BufferedWriter writer = null;
+		try {
+			File file = new File("/home/mayank/Documents/NavigationFile.xml");
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(forXmlFileSb.toString());
+		}catch(Exception e) {
+			System.out.println("Error in appendToFile method : "+e.getMessage());
+			e.printStackTrace();
+		}finally {
+			if(writer!=null) {
+				writer.close();
+			}
+		}
 	}
 	private void addFields(StringBuilder forXmlFileSb,String parameters) {
-		String strArr[] = parameters.split("\n");
-		int tempNum = 0;
-		String key="";
-		String value="";
-		for(String tempLine : strArr) {
-			String tempLineArr[] = tempLine.split(": ");
-			for(String nameValue : tempLineArr) {
-				tempNum=tempNum^1;
-				if(tempNum==1) {
-					forXmlFileSb.append("<field name=\""+nameValue+"\" value=");
-				}else {
-					forXmlFileSb.append("\""+nameValue+"\" />");
+		try {
+			String strArr[] = parameters.split("\n");
+			int tempNum = 0;
+			String key="";
+			String value="";
+			for(String tempLine : strArr) {
+				String tempLineArr[] = tempLine.split(": ");
+				for(String nameValue : tempLineArr) {
+					tempNum=tempNum^1;
+					if(!nameValue.isEmpty()) {
+						if(tempNum==1) {
+							forXmlFileSb.append("\n\t\t<field name=\""+nameValue+"\" value=");
+						}else {
+							forXmlFileSb.append("\""+nameValue+"\" />");
+						}
+					}
 				}
 			}
+		}catch(Exception e) {
+			System.out.println("Error in addFields method : "+e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
