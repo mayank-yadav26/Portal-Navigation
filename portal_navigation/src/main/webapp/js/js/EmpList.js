@@ -15,6 +15,7 @@ Ext.define('requestTypeStore', {
 Ext.define('Grid', {
 	extend : 'Ext.data.Model',
 	fields: [
+		{name: 'navigationName', type:'string'},
 		{name: 'baseUrl', type:'string'},
 		{name: 'requestType', type:'string'},
 		{name: 'parameters', type:'string'},
@@ -71,6 +72,13 @@ function grid() {
 			sortable : true,
 			hidden : true,
 			dataIndex : 'navigationId'
+		},{
+			text : 'Navigation Name',
+			flex : 0.5,
+			width : '100%',
+			sortable : false,
+			hidden : false,
+			dataIndex : 'navigationName'
 		},{
 			text : 'Base Url',
 			flex : 0.5,
@@ -208,6 +216,27 @@ function grid() {
 									}
 								});
 							}
+						},
+						'-',
+						{
+							iconCls : 'fa fa-file',
+							text : 'Generate Nav File',
+							id : 'navigationFile',
+							disabled : true,
+							handler : function() {
+								Ext.Msg
+								.show({
+									title : 'Are you sure?',
+									message : 'Do you want to generate navigation file with these records?',
+									buttons : Ext.Msg.YESNOCANCEL,
+									icon : Ext.Msg.QUESTION,
+									fn : function(btn) {
+										if (btn === 'yes') {
+											createNavigationFile(data);
+										}
+									}
+								});
+							}
 						}]
 				})
 
@@ -225,7 +254,15 @@ function addData(grid) {
 				frame : true,
 				bodyPadding : 10,
 				defaultType : 'textfield',
-				items : [ {
+				items : [{
+					allowBlank : false,
+					fieldLabel : 'Navigation Name',
+					name : 'navigationName',
+					msgTarget : 'under',
+					width : '100%',
+					allowBlank : false,
+					id : 'navigationName',
+				}, {
 					allowBlank : false,
 					fieldLabel : 'Base Url',
 					name : 'baseUrl',
@@ -363,6 +400,15 @@ function editData(record) {
 					hidden : true
 				}, {
 					allowBlank : false,
+					fieldLabel : 'Navigaton Name',
+					name : 'navigationName',
+					msgTarget : 'under',
+					width : '100%',
+					allowBlank : false,
+					id : 'navigationName',
+					value : record[0].data.navigationName
+				},{
+					allowBlank : false,
 					fieldLabel : 'Base Url',
 					name : 'baseUrl',
 					msgTarget : 'under',
@@ -474,6 +520,53 @@ function runData(record) {
 			if (obj.success) {
 				//Ext.Msg.alert('Success', obj.successresponse.message);
 				Ext.getCmp('grid').getStore().reload();
+				Ext.getCmp("runbtn").disable();
+				Ext.getCmp("deletebtn").disable();
+				Ext.getCmp("editbtn").disable();
+			} else {
+				//Ext.Msg.alert('Failure', obj.successresponse.message);
+			}
+		}
+	});
+}
+
+function createNavigationFile(record) {
+	var navigationIds = [];
+	record.forEach(function(item, index) {
+		navigationIds.push(item.data.navigationId);
+	});
+	navigationIds = navigationIds.join();
+	Ext.Ajax.request({
+		url : '/portal_navigation/CreateNavigationFile.action',
+		method : 'POST',
+		params : {
+			"navigationIds" : navigationIds
+		},
+		success : function(response) {
+			var obj = JSON.parse(response.responseText);
+			if (obj.success) {
+				//Ext.Msg.alert('Success', obj.successresponse.message);
+				Ext.getCmp('grid').getStore().reload();
+				Ext.getCmp("createNavigationBtn").disable();
+				Ext.getCmp("runbtn").disable();
+				Ext.getCmp("deletebtn").disable();
+				Ext.getCmp("editbtn").disable();
+			} else {
+				//Ext.Msg.alert('Failure', obj.successresponse.message);
+			}
+			console.log("obj is : "+obj);
+			console.log("response : "+response);
+			//location.href="http://www.google.com";
+			//for opening link in new tab;
+			window.open("http://127.0.0.1:8887/"+obj.docLink);
+			//location.assign("http://www.google.com");
+		},
+		failure : function(response) {
+			var obj = JSON.parse(response.responseText);
+			if (obj.success) {
+				//Ext.Msg.alert('Success', obj.successresponse.message);
+				Ext.getCmp('grid').getStore().reload();
+				Ext.getCmp("createNavigationBtn").disable();
 				Ext.getCmp("runbtn").disable();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();

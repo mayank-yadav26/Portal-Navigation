@@ -22,6 +22,7 @@ public class NavigationDetailsAction {
 	
 	private int navigationId;
 	private String navigationIds;
+	private String navigationName;
 	private String baseUrl;
 	private String requestType;
 	private String parameters;
@@ -52,7 +53,7 @@ public class NavigationDetailsAction {
 	public String addNavigationDetails() throws Exception {
 		System.out.println("In addNavigationDetails Method");
 		try {
-			navigationDetailsManager.saveNavigationDetails(getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
+			navigationDetailsManager.saveNavigationDetails(getNavigationName(),getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
 			obj.put("success", true);
 		}     
 		catch(Exception e){
@@ -65,7 +66,7 @@ public class NavigationDetailsAction {
 	public String editNavigationDetails() throws Exception {
 		System.out.println("In editNavigationDetails Method");
 		try {
-			navigationDetailsManager.updateNavigationDetails(getNavigationId(),getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
+			navigationDetailsManager.updateNavigationDetails(getNavigationId(),getNavigationName(),getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
 			obj.put("success", true);
 		}     
 		catch(Exception e){
@@ -97,6 +98,20 @@ public class NavigationDetailsAction {
 		}     
 		catch(Exception e){
 			System.out.println("Error in runNavigationDetails : "+e.getMessage());
+			e.printStackTrace();
+		}
+		return "success";
+	}
+	
+	public String createNavigationFile() throws Exception {
+		System.out.println("In createNavigationFile Method");
+		try {
+			String docLink = navigationDetailsManager.createNavigationFile(getNavigationIds());
+			obj.put("success", true);
+			obj.put("docLink", docLink);
+		}     
+		catch(Exception e){
+			System.out.println("Error in createNavigationFile : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return "success";
@@ -210,6 +225,14 @@ public class NavigationDetailsAction {
 
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	public String getNavigationName() {
+		return navigationName;
+	}
+
+	public void setNavigationName(String navigationName) {
+		this.navigationName = navigationName;
 	}
 	
 }

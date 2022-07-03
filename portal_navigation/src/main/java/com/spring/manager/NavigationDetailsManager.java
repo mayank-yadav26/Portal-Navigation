@@ -10,13 +10,15 @@ public interface NavigationDetailsManager {
 
 	int getTotalEntires();
 
-	void saveNavigationDetails(String baseUrl, String requestType, String parameters, String requestHeaders);
+	void saveNavigationDetails( String navigationName,String baseUrl, String requestType, String parameters, String requestHeaders);
 
-	void updateNavigationDetails(int navigationId, String baseUrl, String requestType, String parameters,
+	void updateNavigationDetails(int navigationId, String navigationName,String baseUrl, String requestType, String parameters,
 			String requestHeaders);
 
 	void deleteNavigationDetails(String navigationIds);
 
 	String runNavigationDetails(String navigationIds);
+
+	String createNavigationFile(String navigationIds);
 
 }

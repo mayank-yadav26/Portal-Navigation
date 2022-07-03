@@ -37,5 +37,11 @@
 				<param name ="root">obj</param>
 			</result>
 		</action>
+		<action name="CreateNavigationFile"
+			class="com.spring.action.NavigationDetailsAction" method="createNavigationFile">
+			<result name="success" type="json">
+				<param name ="root">obj</param>
+			</result>
+		</action>
 	</package>
 </struts>

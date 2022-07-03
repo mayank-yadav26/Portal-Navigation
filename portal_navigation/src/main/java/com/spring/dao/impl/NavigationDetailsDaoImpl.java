@@ -28,22 +28,22 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 	@Override
 	public ArrayList<NavigationDetails> getNavigationDetailsList(String limit, String start) {
 		System.out.println("Inside getNavigationDetailsList");
-		Session session = null;
-		String hqlSelectQuery = "FROM NavigationDetails";
+//		Session session = null;
+//		String hqlSelectQuery = "FROM NavigationDetails";
 		ArrayList<NavigationDetails> navigationDetailsList = new ArrayList<NavigationDetails>();
 		try {
-			session = getSession();
-			Query query = session.createQuery(hqlSelectQuery);
-			query.setFirstResult(Integer.parseInt(start));
-			query.setMaxResults(Integer.parseInt(limit));
-			navigationDetailsList=(ArrayList<NavigationDetails>) query.list();
+//			session = getSession();
+//			Query query = session.createQuery(hqlSelectQuery);
+//			query.setFirstResult(Integer.parseInt(start));
+//			query.setMaxResults(Integer.parseInt(limit));
+//			navigationDetailsList=(ArrayList<NavigationDetails>) query.list();
 			navigationDetailsList=(ArrayList<NavigationDetails>)getHibernateTemplate().loadAll(NavigationDetails.class);
 		}catch(Exception e) {
 			System.out.println("Error in getNavigationDetailsList : "+e.getMessage());
 		}finally {
-			if(session!=null) {
-				session.close();
-			}
+//			if(session!=null) {
+//				session.close();
+//			}
 		}
 		return navigationDetailsList;
 	}
@@ -66,10 +66,11 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 	}
 
 	@Override
-	public void saveNavigationDetails(String baseUrl, String requestType, String parameters, String requestHeaders) {
+	public void saveNavigationDetails(String navigationName,String baseUrl, String requestType, String parameters, String requestHeaders) {
 		System.out.println("Inside saveNavigationDetails");
 		try {
 			NavigationDetails  navigationDetails = new NavigationDetails();
+			navigationDetails.setNavigationName(navigationName);
 			navigationDetails.setBaseUrl(baseUrl);
 			navigationDetails.setRequestType(requestType);
 			navigationDetails.setParameters(parameters);
@@ -81,7 +82,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 	}
 	
 	@Override
-	public void updateNavigationDetails(int navigationId, String baseUrl, String requestType, String parameters,
+	public void updateNavigationDetails(int navigationId, String navigationName,String baseUrl, String requestType, String parameters,
 			String requestHeaders) {
 		System.out.println("Inside updateNavigationDetails");
 		Session session = null;
@@ -89,6 +90,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			session = getSession();
 			Transaction txn = session.beginTransaction();
 			NavigationDetails navigationDetails = (NavigationDetails)session.get(NavigationDetails.class, navigationId); 
+			navigationDetails.setNavigationName(navigationName);
 			navigationDetails.setBaseUrl(baseUrl);
 			navigationDetails.setRequestType(requestType);
 			navigationDetails.setParameters(parameters);
@@ -158,5 +160,35 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 		}
 		return docLink;
 	}
-
+	
+	@Override
+	public String createNavigationFile(String navigationIds) {
+		System.out.println(navigationIds);
+		System.out.println("In createNavigationFile Method");
+		String docLink="";
+		Session session = null;
+		String hqlSelectQuery = "FROM NavigationDetails nd WHERE nd.navigationId IN :idList";
+		ArrayList<Integer> navigationIdsListInt = new ArrayList<>();
+		ArrayList<NavigationDetails> navigationDetailsList = new ArrayList<NavigationDetails>();
+		try {
+			String[] navigationIdsArr = navigationIds.split(",");
+			for(String str : navigationIdsArr) {
+				navigationIdsListInt.add(Integer.parseInt(str));
+			}
+			session = getSession();
+			Query query = session.createQuery(hqlSelectQuery);
+			query.setParameterList("idList", navigationIdsListInt);
+			navigationDetailsList=(ArrayList<NavigationDetails>) query.list();
+			NavigationAgent navigationAgent = new NavigationAgent();
+			docLink = navigationAgent.createNavigationFile(navigationDetailsList);
+			if(!docLink.isEmpty()) {
+				System.out.println("Navigation is success");
+			}
+		}     
+		catch(Exception e){
+			System.out.println("Error in createNavigationFile : "+e.getMessage());
+			e.printStackTrace();
+		}
+		return docLink;
+	}
 }

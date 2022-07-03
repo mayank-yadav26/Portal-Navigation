@@ -8,8 +8,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,7 +21,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -27,6 +33,8 @@ public class NavigationAgent {
 	static CloseableHttpClient httpclient;
 	private static final String GET = "GET";
 	private static final String POST = "POST";
+	private static String browserResponce="";
+	private StringBuilder forXmlFileSb;
 	
 	public String doNavigation(ArrayList<NavigationDetails> navigationDetailsList) {
 		String baseUrl = "";
@@ -35,11 +43,16 @@ public class NavigationAgent {
 		String requestHeaders = "";
 		String browserResp = "";
 		String parentPath = "/home/mayank/Documents/";
-		String fileName = "responce.html";
+		String fileName = "";
+		String navigationName="";
 		try {
 			// Creating a HttpClient object
-			httpclient = HttpClients.createDefault();
+			//httpclient = HttpClients.createDefault();
+			//this will help to redirect post requests
+			httpclient = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
 			for(NavigationDetails navigationDetails : navigationDetailsList) {
+				navigationName=navigationDetails.getNavigationName();
+				fileName = navigationName+".html";
 				baseUrl = navigationDetails.getBaseUrl();
 				requestType = navigationDetails.getRequestType();
 				parameters = navigationDetails.getParameters();
@@ -63,6 +76,7 @@ public class NavigationAgent {
 					addNameValuePairs(nameValuePairs,parameters);
 					httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 					HttpResponse httpresponsePost = httpclient.execute(httpPost);
+					System.out.println(httpresponsePost.getStatusLine().toString()); 
 					String browserRespPost = writeToFile(httpresponsePost,parentPath+fileName);
 				}
 			}
@@ -79,20 +93,47 @@ public class NavigationAgent {
 		String value="";
 		for(String tempLine : strArr) {
 			String tempLineArr[] = tempLine.split(": ");
-			for(String temp : tempLineArr) {
-				tempNum=tempNum^1;
-				if(tempNum==1) {
-					key=temp;
-				}else {
-					value=temp;
+			for(int i=0;i<tempLineArr.length;++i) {
+				key = tempLineArr[i];
+				value = tempLineArr[++i];
+				if(value.equals("DATE")) {
+					Date currentDate = new Date();
+					SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+					value = formatter.format(currentDate);
+				}else if(value.equals("FORMULA")) {
+					String regex = tempLineArr[++i].replace("\\","\\\\");
+					Pattern regexPattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+					Matcher regexMatcher = regexPattern.matcher(browserResponce);
+					if(regexMatcher.find()) {
+						value = regexMatcher.group(1);
+					} 
+				}else if(value.equals("JSON")) {
+					value = tempLineArr[++i];
+					while(i<tempLineArr.length-1) {
+						String paramName = tempLineArr[++i];
+						String paramValue = tempLineArr[++i];
+						if(paramValue.equals("DATE")) {
+							Date currentDate = new Date();
+							SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+							paramValue = formatter.format(currentDate);
+						}else if(paramValue.equals("FORMULA")) {
+							String regex = tempLineArr[++i].replace("\\","\\\\");
+							Pattern regexPattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
+							Matcher regexMatcher = regexPattern.matcher(browserResponce);
+							if(regexMatcher.find()) {
+								paramValue = regexMatcher.group(1);
+							}
+						}
+						value.replace(paramName, paramValue);
+					}
 				}
 			}
 			nameValuePairs.add(new BasicNameValuePair(key,value));
 		}
 	}
 
-	private static void addRequestHeaders(HttpGet httpget, String inputStr) {
-		String strArr[] = inputStr.split("\n");
+	private static void addRequestHeaders(HttpGet httpget, String parameters) {
+		String strArr[] = parameters.split("\n");
 		int tempNum = 0;
 		String key="";
 		String value="";
@@ -114,7 +155,7 @@ public class NavigationAgent {
 
 	private static String writeToFile(HttpResponse httpresponse,String filePath) {
 		// saving pod doc
-		String browserResponce="";
+		
 		//read in chunks of 2KB
 		byte[] buffer = new byte[2048];
 		int bytesRead = 0;
@@ -162,5 +203,54 @@ public class NavigationAgent {
 		}
 		url=url.replaceAll("^&", "");
 		return url;
+	}
+	public String createNavigationFile(ArrayList<NavigationDetails> navigationDetailsList) {
+		String baseUrl = "";
+		String requestType = "";
+		String parameters = "";
+		String requestHeaders = "";
+		String browserResp = "";
+		String parentPath = "/home/mayank/Documents/";
+		String fileName = "";
+		String navigationName="";
+		try {
+			for(NavigationDetails navigationDetails : navigationDetailsList) {
+				navigationName=navigationDetails.getNavigationName();
+				fileName = navigationName+".xml";
+				baseUrl = navigationDetails.getBaseUrl();
+				requestType = navigationDetails.getRequestType();
+				parameters = navigationDetails.getParameters();
+				requestHeaders = navigationDetails.getRequestHeaders();
+				forXmlFileSb.append("\n\t<"+requestType+" name=\""+navigationName+"\" url=\""+baseUrl+"\">");
+				addFields(forXmlFileSb,parameters);
+				forXmlFileSb.append("\n\t<"+requestType+"/>");
+				appendToFile(forXmlFileSb);
+			}
+		}catch(Exception e) {
+			System.out.println("Error in doNavigation method : "+e.getMessage());
+			e.printStackTrace();
+		}
+		return fileName;
+	}
+	private void appendToFile(StringBuilder forXmlFileSb2) {
+		// TODO Auto-generated method stub
+		
+	}
+	private void addFields(StringBuilder forXmlFileSb,String parameters) {
+		String strArr[] = parameters.split("\n");
+		int tempNum = 0;
+		String key="";
+		String value="";
+		for(String tempLine : strArr) {
+			String tempLineArr[] = tempLine.split(": ");
+			for(String nameValue : tempLineArr) {
+				tempNum=tempNum^1;
+				if(tempNum==1) {
+					forXmlFileSb.append("<field name=\""+nameValue+"\" value=");
+				}else {
+					forXmlFileSb.append("\""+nameValue+"\" />");
+				}
+			}
+		}
 	}
 }

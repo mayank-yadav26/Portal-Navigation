@@ -13,6 +13,7 @@
 			<generator class="native" />
 		</id>
 
+		<property name="navigationName" column="navigation_name" type="string" />
 		<property name="baseUrl" column="base_url" type="string" />
 		<property name="requestType" column="request_type" type="string" />
 		<property name="parameters" column="parameters" type="string" />
