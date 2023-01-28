@@ -1,3 +1,4 @@
+//http://localhost:8080/portal_navigation/
 Ext.onReady(function() {
 	grid();
 });
@@ -123,11 +124,11 @@ function grid() {
 					if (record.length > 0) {
 						Ext.getCmp("deletebtn").enable();
 						Ext.getCmp("runbtn").enable();
-						Ext.getCmp("navigationFile").enable();
+						Ext.getCmp("generateNavBtn").enable();
 					} else {
 						Ext.getCmp("deletebtn").disable();
 						Ext.getCmp("runbtn").disable();
-						Ext.getCmp("navigationFile").disable();
+						Ext.getCmp("generateNavBtn").disable();
 					}
 					data = record;
 				},
@@ -141,11 +142,11 @@ function grid() {
 					if (record.length > 0) {
 						Ext.getCmp("deletebtn").enable();
 						Ext.getCmp("runbtn").enable();
-						Ext.getCmp("navigationFile").enable();
+						Ext.getCmp("generateNavBtn").enable();
 					} else {
 						Ext.getCmp("deletebtn").disable();
 						Ext.getCmp("runbtn").disable();
-						Ext.getCmp("navigationFile").disable();
+						Ext.getCmp("generateNavBtn").disable();
 					}
 					data = record;
 				}
@@ -225,7 +226,7 @@ function grid() {
 						{
 							iconCls : 'fa fa-file',
 							text : 'Generate Nav File',
-							id : 'navigationFile',
+							id : 'generateNavBtn',
 							disabled : true,
 							handler : function() {
 								Ext.Msg
@@ -244,6 +245,12 @@ function grid() {
 						}]
 				})
 
+	});
+	dataGrid.getStore().on('load',function(){
+		Ext.getCmp("deletebtn").disable();
+		Ext.getCmp("editbtn").disable();
+		Ext.getCmp("runbtn").disable();
+		Ext.getCmp("generateNavBtn").disable();
 	});
 	console.log('Successfully Rendered Grid UI.');
 }
@@ -362,6 +369,8 @@ function deleteData(record) {
 				Ext.getCmp('grid').getStore().reload();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
+				Ext.getCmp("runbtn").disable();
+				Ext.getCmp("generateNavBtn").disable();
 			} else {
 				console.log("Failed in delete");
 				//Ext.Msg.alert('Failure', obj.successresponse.message);
@@ -375,6 +384,8 @@ function deleteData(record) {
 				Ext.getCmp('grid').getStore().reload();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
+				Ext.getCmp("runbtn").disable();
+				Ext.getCmp("generateNavBtn").disable();
 			} else {
 				console.log("Failed in delete");
 				//Ext.Msg.alert('Failure', obj.successresponse.message);
@@ -469,6 +480,8 @@ function editData(record) {
 											Ext.getCmp('grid').getStore().reload();
 											Ext.getCmp("editbtn").disable();
 											Ext.getCmp("deletebtn").disable();
+											Ext.getCmp("runbtn").disable();
+				                 			Ext.getCmp("generateNavBtn").disable();
 											button.up('form').close();
 										},
 										failure : function(form,action) {
@@ -509,6 +522,7 @@ function runData(record) {
 				Ext.getCmp("runbtn").disable();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
+				Ext.getCmp("generateNavBtn").disable();
 			} else {
 				//Ext.Msg.alert('Failure', obj.successresponse.message);
 			}
@@ -517,6 +531,7 @@ function runData(record) {
 			//location.href="http://www.google.com";
 			//for opening link in new tab;
 			window.open("http://127.0.0.1:8887/"+obj.docLink);
+			//window.open(obj.docLink,'_blank');
 			//location.assign("http://www.google.com");
 		},
 		failure : function(response) {
@@ -527,6 +542,7 @@ function runData(record) {
 				Ext.getCmp("runbtn").disable();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
+				Ext.getCmp("generateNavBtn").disable();
 			} else {
 				//Ext.Msg.alert('Failure', obj.successresponse.message);
 			}
@@ -551,7 +567,7 @@ function createNavigationFile(record) {
 			if (obj.success) {
 				//Ext.Msg.alert('Success', obj.successresponse.message);
 				Ext.getCmp('grid').getStore().reload();
-				Ext.getCmp("createNavigationBtn").disable();
+				Ext.getCmp("generateNavBtn").disable();
 				Ext.getCmp("runbtn").disable();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
@@ -570,7 +586,7 @@ function createNavigationFile(record) {
 			if (obj.success) {
 				//Ext.Msg.alert('Success', obj.successresponse.message);
 				Ext.getCmp('grid').getStore().reload();
-				Ext.getCmp("createNavigationBtn").disable();
+				Ext.getCmp("generateNavBtn").disable();
 				Ext.getCmp("runbtn").disable();
 				Ext.getCmp("deletebtn").disable();
 				Ext.getCmp("editbtn").disable();
@@ -580,5 +596,11 @@ function createNavigationFile(record) {
 		}
 	});
 }
+
+grid.getStore().reload({
+  callback: function(){
+    grid.getView().refresh();
+  }
+});
 
 

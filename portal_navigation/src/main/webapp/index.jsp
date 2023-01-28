@@ -9,7 +9,7 @@
 <script type="text/javascript" src="./js/extjs/ext-all-6.0.2.js"></script>
 <script type="text/javascript" src="./js/extjs/ext-all-debug.js"> </script> 
 <script type="text/javascript" src="./js/extjs/ext-all-debug-6.0.2.js"> </script>
-<script type="text/javascript" src="./js/js/EmpList.js"> </script>
+<script type="text/javascript" src="./js/js/Navigation.js"> </script>
 <link href = "https://cdnjs.cloudflare.com/ajax/libs/extjs/6.0.0/classic/theme-triton/resources/theme-triton-all.css" rel = "stylesheet" />
 </head>
 <body>

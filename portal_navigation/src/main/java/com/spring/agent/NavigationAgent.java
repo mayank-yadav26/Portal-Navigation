@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -38,6 +39,11 @@ public class NavigationAgent {
 	private static final String POST = "POST";
 	private static String browserResponce="";
 
+	/**
+	 * Main method to do navigation
+	 * @param navigationDetailsList
+	 * @return
+	 */
 	public String doNavigation(ArrayList<NavigationDetails> navigationDetailsList) {
 		String baseUrl = "";
 		String requestType = "";
@@ -88,38 +94,48 @@ public class NavigationAgent {
 		}
 		return fileName;
 	}
-	private static void addNameValuePairs(List<BasicNameValuePair> nameValuePairs, String inputStr) {
-		String strArr[] = inputStr.split("\n");
+	/**
+	 * To add BasicNameValuePair from post request parameters
+	 * parameters will be like =>
+	 * key: value
+	 * key: DATE
+	 * key: FORMULA: REGEX
+	 * key: JSON: 
+	 * @param nameValuePairs
+	 * @param inputStr
+	 */
+	private static void addNameValuePairs(List<BasicNameValuePair> nameValuePairs, String postParameters) {
+		String postParametersArr[] = postParameters.split("\n");
 		int tempNum = 0;
 		String key="";
 		String value="";
-		for(String tempLine : strArr) {
-			String tempLineArr[] = tempLine.split(": ");
-			for(int i=0;i<tempLineArr.length;++i) {
-				key = tempLineArr[i];
-				value = tempLineArr[++i];
+		for(String postParameter : postParametersArr) {
+			String postParameterArr[] = postParameter.split(": ");
+			for(int i=0;i<postParameterArr.length;++i) {
+				key = postParameterArr[i];
+				value = postParameterArr[++i];
 				if(value.equals("DATE")) {
 					Date currentDate = new Date();
 					SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 					value = formatter.format(currentDate);
 				}else if(value.equals("FORMULA")) {
-					String regex = tempLineArr[++i].replace("\\","\\\\");
+					String regex = postParameterArr[++i].replace("\\","\\\\");
 					Pattern regexPattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
 					Matcher regexMatcher = regexPattern.matcher(browserResponce);
 					if(regexMatcher.find()) {
 						value = regexMatcher.group(1);
 					} 
 				}else if(value.equals("JSON")) {
-					value = tempLineArr[++i];
-					while(i<tempLineArr.length-1) {
-						String paramName = tempLineArr[++i];
-						String paramValue = tempLineArr[++i];
+					value = postParameterArr[++i];
+					while(i<postParameterArr.length-1) {
+						String paramName = postParameterArr[++i];
+						String paramValue = postParameterArr[++i];
 						if(paramValue.equals("DATE")) {
 							Date currentDate = new Date();
 							SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 							paramValue = formatter.format(currentDate);
 						}else if(paramValue.equals("FORMULA")) {
-							String regex = tempLineArr[++i].replace("\\","\\\\");
+							String regex = postParameterArr[++i].replace("\\","\\\\");
 							Pattern regexPattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE|Pattern.DOTALL|Pattern.MULTILINE);
 							Matcher regexMatcher = regexPattern.matcher(browserResponce);
 							if(regexMatcher.find()) {
@@ -134,19 +150,21 @@ public class NavigationAgent {
 		}
 	}
 
-	private static void addRequestHeaders(HttpGet httpget, String parameters) {
-		String strArr[] = parameters.split("\n");
-		int tempNum = 0;
+	/**
+	 * To add request headers to HttpGet object
+	 * @param httpget
+	 * @param requestHeaders
+	 */
+	private static void addRequestHeaders(HttpGet httpget, String requestHeaders) {
+		String requestHeadersArr[] = requestHeaders.split("\n");
 		String key="";
 		String value="";
-		for(String tempLine : strArr) {
-			String tempLineArr[] = tempLine.split(": ");
-			for(String temp : tempLineArr) {
-				tempNum=tempNum^1;
-				if(tempNum==1) {
-					key=temp;
-				}else {
-					value=temp;
+		for(String requestHeader : requestHeadersArr) {
+			String requestHeaderArr[] = requestHeader.split(": ");
+			if(requestHeaderArr!=null) {
+				key = requestHeaderArr[0].trim();
+				if(requestHeaderArr.length>1) {
+					value = requestHeaderArr[1].trim();
 				}
 			}
 			if(!key.isEmpty()) {
@@ -155,9 +173,13 @@ public class NavigationAgent {
 		}
 	}
 
+	/**
+	 * To write response data to file and save to local.
+	 * @param httpresponse
+	 * @param filePath
+	 * @return
+	 */
 	private static String writeToFile(HttpResponse httpresponse,String filePath) {
-		// saving pod doc
-
 		//read in chunks of 2KB
 		byte[] buffer = new byte[2048];
 		int bytesRead = 0;
@@ -180,6 +202,7 @@ public class NavigationAgent {
 			while((line=br.readLine())!=null) {
 				browserResponce+=line+"\n";
 			}
+			br.close();
 		}
 		catch(Exception ex){
 			System.out.println("Exception : "+ex.getMessage());
@@ -188,24 +211,37 @@ public class NavigationAgent {
 		return browserResponce;
 	}
 
+	/**
+	 * To create get URL from get request parameters
+	 * @param parameters
+	 * @return
+	 */
 	private static String createGetUrl(String parameters) {
-		String strArr[] = parameters.split("\n");
-		int tempNum = 0;
 		String url = "";
-		for(String tempLine : strArr) {
-			String tempLineArr[] = tempLine.split(": ");
-			for(String temp : tempLineArr) {
-				tempNum=tempNum^1;
-				if(tempNum==1) {
-					url+="&"+temp.trim();
-				}else {
-					url+="="+temp.trim().replace(" ", "+");
+		String key = "";
+		String value = "";
+		if(StringUtils.isNotBlank(parameters)) {
+			String parametersArr[] = parameters.trim().split("\n");
+			for(String parameter : parametersArr) {
+				String parameterArr[] = parameter.split(": ");
+				key = parameterArr[0].trim();
+				if(parameterArr.length>1) {
+					value = parameterArr[1].trim().replace(" ", "+");
 				}
+				url+="&"+key;
+				url+="="+value;
 			}
+			// to remove only starting & sign
+			url=url.replaceAll("^&", "");
 		}
-		url=url.replaceAll("^&", "");
 		return url;
 	}
+	
+	/**
+	 * To create and save navigation XML file in local
+	 * @param navigationDetailsList
+	 * @return
+	 */
 	public String createNavigationFile(ArrayList<NavigationDetails> navigationDetailsList) {
 		String baseUrl = "";
 		String requestType = "";
@@ -215,32 +251,37 @@ public class NavigationAgent {
 		String parentPath = "/home/mayank/Documents/";
 		String fileName = "NavigationFile.xml";
 		String navigationName="";
-		StringBuilder forXmlFileSb = new StringBuilder();
+		StringBuilder xmlFileSb = new StringBuilder();
 		try {
-			forXmlFileSb.append("<navigations>");
+			xmlFileSb.append("<navigations>");
 			for(NavigationDetails navigationDetails : navigationDetailsList) {
 				navigationName=navigationDetails.getNavigationName();
 				baseUrl = navigationDetails.getBaseUrl();
 				requestType = navigationDetails.getRequestType();
 				parameters = navigationDetails.getParameters();
 				requestHeaders = navigationDetails.getRequestHeaders();
-				forXmlFileSb.append("\n\t<"+requestType.toLowerCase()+" name=\""+navigationName+"\" url=\""+baseUrl+"\">");
-				addFields(forXmlFileSb,parameters);
-				forXmlFileSb.append("\n\t</"+requestType.toLowerCase()+">\n");
+				xmlFileSb.append("\n\t<"+requestType.toLowerCase()+" name=\""+navigationName+"\" url=\""+baseUrl+"\">");
+				addFields(xmlFileSb,parameters);
+				xmlFileSb.append("\n\t</"+requestType.toLowerCase()+">\n");
 			}
-			writeToFile(forXmlFileSb.append("</navigations>"));
+			writeToFile(xmlFileSb.append("</navigations>"));
 		}catch(Exception e) {
 			System.out.println("Error in doNavigation method : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return fileName;
 	}
-	private void writeToFile(StringBuilder forXmlFileSb) throws IOException {
+	/**
+	 * To write data to file to create XML navigation file.
+	 * @param xmlFileSb
+	 * @throws IOException
+	 */
+	private void writeToFile(StringBuilder xmlFileSb) throws IOException {
 		BufferedWriter writer = null;
 		try {
 			File file = new File("/home/mayank/Documents/NavigationFile.xml");
 			writer = new BufferedWriter(new FileWriter(file));
-			writer.write(forXmlFileSb.toString());
+			writer.write(xmlFileSb.toString());
 		}catch(Exception e) {
 			System.out.println("Error in appendToFile method : "+e.getMessage());
 			e.printStackTrace();
@@ -250,23 +291,23 @@ public class NavigationAgent {
 			}
 		}
 	}
-	private void addFields(StringBuilder forXmlFileSb,String parameters) {
+	/**
+	 * To add fields to XML navigation file.
+	 * @param xmlFileSb
+	 * @param parameters
+	 */
+	private void addFields(StringBuilder xmlFileSb,String parameters) {
 		try {
-			String strArr[] = parameters.split("\n");
-			int tempNum = 0;
+			String parametersArr[] = parameters.split("\n");
 			String key="";
 			String value="";
-			for(String tempLine : strArr) {
-				String tempLineArr[] = tempLine.split(": ");
-				for(String nameValue : tempLineArr) {
-					tempNum=tempNum^1;
-					if(!nameValue.isEmpty()) {
-						if(tempNum==1) {
-							forXmlFileSb.append("\n\t\t<field name=\""+nameValue+"\" value=");
-						}else {
-							forXmlFileSb.append("\""+nameValue+"\" />");
-						}
-					}
+			for(String parameter : parametersArr) {
+				String parameterArr[] = parameter.split(": ");
+				if(parameterArr!=null && parameterArr.length>1) {
+					key = parameterArr[0].trim();
+					xmlFileSb.append("\n\t\t<field name=\""+key+"\" value=");
+					value = parameterArr[1].trim();
+					xmlFileSb.append("\""+value+"\" />");
 				}
 			}
 		}catch(Exception e) {
