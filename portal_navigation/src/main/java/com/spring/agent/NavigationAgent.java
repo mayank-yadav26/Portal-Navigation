@@ -10,7 +10,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,21 +18,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.spring.model.NavigationDetails;
 
 public class NavigationAgent {
+	public static final Logger LOGGER = LogManager.getLogger(NavigationAgent.class);
 	static CloseableHttpClient httpclient;
 	private static final String GET = "GET";
 	private static final String POST = "POST";
@@ -45,6 +44,7 @@ public class NavigationAgent {
 	 * @return
 	 */
 	public String doNavigation(ArrayList<NavigationDetails> navigationDetailsList) {
+		LOGGER.info("Inside doNavigation method");
 		String baseUrl = "";
 		String requestType = "";
 		String parameters = "";
@@ -76,7 +76,7 @@ public class NavigationAgent {
 					addRequestHeaders(httpget,requestHeaders);
 					// Executing the Get request
 					HttpResponse httpresponse = httpclient.execute(httpget);
-					System.out.println(httpresponse.getStatusLine().toString()); 
+					LOGGER.info(httpresponse.getStatusLine().toString()); 
 					browserResp = writeToFile(httpresponse,parentPath+fileName);
 				}else {
 					HttpPost httpPost = new HttpPost(baseUrl);
@@ -84,14 +84,15 @@ public class NavigationAgent {
 					addNameValuePairs(nameValuePairs,parameters);
 					httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 					HttpResponse httpresponsePost = httpclient.execute(httpPost);
-					System.out.println(httpresponsePost.getStatusLine().toString()); 
+					LOGGER.info(httpresponsePost.getStatusLine().toString()); 
 					String browserRespPost = writeToFile(httpresponsePost,parentPath+fileName);
 				}
 			}
 		}catch(Exception e) {
-			System.out.println("Error in doNavigation method : "+e.getMessage());
+			LOGGER.error("Error in doNavigation method : "+e.getMessage());
 			e.printStackTrace();
 		}
+		LOGGER.info("Exit doNavigation method");
 		return fileName;
 	}
 	/**
@@ -105,6 +106,7 @@ public class NavigationAgent {
 	 * @param inputStr
 	 */
 	private static void addNameValuePairs(List<BasicNameValuePair> nameValuePairs, String postParameters) {
+		LOGGER.info("Inside addNameValuePairs method");
 		String postParametersArr[] = postParameters.split("\n");
 		int tempNum = 0;
 		String key="";
@@ -148,6 +150,7 @@ public class NavigationAgent {
 			}
 			nameValuePairs.add(new BasicNameValuePair(key,value));
 		}
+		LOGGER.info("Exit addNameValuePairs method");
 	}
 
 	/**
@@ -194,7 +197,7 @@ public class NavigationAgent {
 				}     
 			}
 			catch(Exception e) {
-				System.out.println("Exception : "+e.getMessage());
+				LOGGER.info("Exception : "+e.getMessage());
 			}
 			File file = new File(filePath);
 			BufferedReader br = new BufferedReader(new FileReader(file));
@@ -205,7 +208,7 @@ public class NavigationAgent {
 			br.close();
 		}
 		catch(Exception ex){
-			System.out.println("Exception : "+ex.getMessage());
+			LOGGER.error("Exception : "+ex.getMessage());
 			ex.printStackTrace();
 		}
 		return browserResponce;
@@ -266,7 +269,7 @@ public class NavigationAgent {
 			}
 			writeToFile(xmlFileSb.append("</navigations>"));
 		}catch(Exception e) {
-			System.out.println("Error in doNavigation method : "+e.getMessage());
+			LOGGER.error("Error in doNavigation method : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return fileName;
@@ -283,7 +286,7 @@ public class NavigationAgent {
 			writer = new BufferedWriter(new FileWriter(file));
 			writer.write(xmlFileSb.toString());
 		}catch(Exception e) {
-			System.out.println("Error in appendToFile method : "+e.getMessage());
+			LOGGER.info("Error in appendToFile method : "+e.getMessage());
 			e.printStackTrace();
 		}finally {
 			if(writer!=null) {
@@ -311,7 +314,7 @@ public class NavigationAgent {
 				}
 			}
 		}catch(Exception e) {
-			System.out.println("Error in addFields method : "+e.getMessage());
+			LOGGER.error("Error in addFields method : "+e.getMessage());
 			e.printStackTrace();
 		}
 	}

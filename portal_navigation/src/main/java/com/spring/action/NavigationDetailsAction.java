@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -11,6 +13,7 @@ import com.spring.manager.NavigationDetailsManager;
 import com.spring.model.NavigationDetails;
 
 public class NavigationDetailsAction {
+	public static final Logger LOGGER = LogManager.getLogger(NavigationDetailsAction.class);
 	private static NavigationDetailsManager navigationDetailsManager;
 	private String totalCount;
 	private String limit;
@@ -29,7 +32,7 @@ public class NavigationDetailsAction {
 	private String requestHeaders;
 	
 	public String getNavigationDetails() {
-		System.out.println("Inside getNavigationDetails");
+		LOGGER.info("Inside getNavigationDetails");
 		Map<String , Object> temp = new HashMap<String, Object>();
 		try {
 			ApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-config.xml");
@@ -40,78 +43,78 @@ public class NavigationDetailsAction {
 			temp.put("data", navigationDetailsList);
 			temp.put("total", totalCount);
 		    obj = temp;
-			//System.out.println("data is "+temp.get("data"));
+			//LOGGER.info("data is "+temp.get("data"));
 			setSuccess(true);
 		}     
 		catch(Exception e){
-			System.out.println("Error in getFilmData : "+e.getMessage());
+			LOGGER.error("Error in getFilmData : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return "success";
 	}
 	
 	public String addNavigationDetails() throws Exception {
-		System.out.println("In addNavigationDetails Method");
+		LOGGER.info("In addNavigationDetails Method");
 		try {
 			navigationDetailsManager.saveNavigationDetails(getNavigationName(),getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
 			obj.put("success", true);
 		}     
 		catch(Exception e){
-			System.out.println("Error in addNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in addNavigationDetails : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return "success";
 	}	
 	
 	public String editNavigationDetails() throws Exception {
-		System.out.println("In editNavigationDetails Method");
+		LOGGER.info("In editNavigationDetails Method");
 		try {
 			navigationDetailsManager.updateNavigationDetails(getNavigationId(),getNavigationName(),getBaseUrl(),getRequestType(),getParameters(),getRequestHeaders());
 			obj.put("success", true);
 		}     
 		catch(Exception e){
-			System.out.println("Error in editNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in editNavigationDetails : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return "success";
 	}
 	
 	public String deleteNavigationDetails() throws Exception {
-		System.out.println("In deleteNavigationDetails Method");
+		LOGGER.info("In deleteNavigationDetails Method");
 		try {
 			navigationDetailsManager.deleteNavigationDetails(getNavigationIds());
 			obj.put("success", true);
 		}     
 		catch(Exception e){
-			System.out.println("Error in deleteNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in deleteNavigationDetails : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return "success";
 	}
 	
 	public String runNavigationDetails() throws Exception {
-		System.out.println("In runNavigationDetails Method");
+		LOGGER.info("In runNavigationDetails Method");
 		try {
 			String docLink = navigationDetailsManager.runNavigationDetails(getNavigationIds());
 			obj.put("success", true);
 			obj.put("docLink", docLink);
 		}     
 		catch(Exception e){
-			System.out.println("Error in runNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in runNavigationDetails : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return "success";
 	}
 	
 	public String createNavigationFile() throws Exception {
-		System.out.println("In createNavigationFile Method");
+		LOGGER.info("In createNavigationFile Method");
 		try {
 			String docLink = navigationDetailsManager.createNavigationFile(getNavigationIds());
 			obj.put("success", true);
 			obj.put("docLink", docLink);
 		}     
 		catch(Exception e){
-			System.out.println("Error in createNavigationFile : "+e.getMessage());
+			LOGGER.error("Error in createNavigationFile : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return "success";
@@ -121,7 +124,7 @@ public class NavigationDetailsAction {
 		try {		
 			totalCount = navigationDetailsManager.getTotalEntires()+"";
 		}catch(Exception e) {
-			System.out.println("Error in setTotalCount : "+e.getMessage() + "\n" + e);
+			LOGGER.error("Error in setTotalCount : "+e.getMessage() + "\n" + e);
 		}
 	}
 	
