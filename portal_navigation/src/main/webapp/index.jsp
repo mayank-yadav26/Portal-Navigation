@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Hello</title>
+<title>Portal Navigation</title>
 <script type="text/javascript" src="./js/extjs/ext-all.js"></script>
 <script type="text/javascript" src="./js/extjs/ext-all-6.0.2.js"></script>
 <script type="text/javascript" src="./js/extjs/ext-all-debug.js"> </script> 

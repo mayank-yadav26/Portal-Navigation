@@ -3,6 +3,8 @@ package com.spring.dao.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -13,6 +15,7 @@ import com.spring.dao.NavigationDetailsDao;
 import com.spring.model.NavigationDetails;
 
 public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
+	public static final Logger LOGGER = LogManager.getLogger(NavigationDetailsDaoImpl.class);
 	HibernateTemplate hibernateTemplate;
 	public Session getSession(){
 		return hibernateTemplate.getSessionFactory().openSession();
@@ -27,7 +30,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 
 	@Override
 	public ArrayList<NavigationDetails> getNavigationDetailsList(String limit, String start) {
-		System.out.println("Inside getNavigationDetailsList");
+		LOGGER.info("Inside getNavigationDetailsList");
 //		Session session = null;
 //		String hqlSelectQuery = "FROM NavigationDetails";
 		ArrayList<NavigationDetails> navigationDetailsList = new ArrayList<NavigationDetails>();
@@ -39,7 +42,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 //			navigationDetailsList=(ArrayList<NavigationDetails>) query.list();
 			navigationDetailsList=(ArrayList<NavigationDetails>)getHibernateTemplate().loadAll(NavigationDetails.class);
 		}catch(Exception e) {
-			System.out.println("Error in getNavigationDetailsList : "+e.getMessage());
+			LOGGER.error("Error in getNavigationDetailsList : "+e.getMessage());
 		}finally {
 //			if(session!=null) {
 //				session.close();
@@ -50,7 +53,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 
 	@Override
 	public int getTotalEntires() {
-		System.out.println("Inside getTotalEntires");
+		LOGGER.info("Inside getTotalEntires");
 		//		Session session = null;
 		//		String hqlSelectQuery = "FROM Film";
 		ArrayList<NavigationDetails> navigationDetailsList = new ArrayList<NavigationDetails>();
@@ -60,14 +63,14 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			//			filmList=(ArrayList<Film>) query.list();
 			navigationDetailsList=(ArrayList<NavigationDetails>)getHibernateTemplate().loadAll(NavigationDetails.class);
 		}catch(Exception e) {
-			System.out.println("Error in getTotalEntires : "+e.getMessage());
+			LOGGER.error("Error in getTotalEntires : "+e.getMessage());
 		}
 		return navigationDetailsList.size();
 	}
 
 	@Override
 	public void saveNavigationDetails(String navigationName,String baseUrl, String requestType, String parameters, String requestHeaders) {
-		System.out.println("Inside saveNavigationDetails");
+		LOGGER.info("Inside saveNavigationDetails");
 		try {
 			NavigationDetails  navigationDetails = new NavigationDetails();
 			navigationDetails.setNavigationName(navigationName);
@@ -77,14 +80,14 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			navigationDetails.setRequestHeaders(requestHeaders);
 			getHibernateTemplate().save(navigationDetails);
 		}catch(Exception e) {
-			System.out.println("Error in saveNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in saveNavigationDetails : "+e.getMessage());
 		}
 	}
 	
 	@Override
 	public void updateNavigationDetails(int navigationId, String navigationName,String baseUrl, String requestType, String parameters,
 			String requestHeaders) {
-		System.out.println("Inside updateNavigationDetails");
+		LOGGER.info("Inside updateNavigationDetails");
 		Session session = null;
 		try {
 			session = getSession();
@@ -98,7 +101,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			getHibernateTemplate().update(navigationDetails);
 			txn.commit();
 		}catch(Exception e) {
-			System.out.println("Error in updateNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in updateNavigationDetails : "+e.getMessage());
 		}finally {
 			if(session!=null) {
 				session.close();
@@ -108,7 +111,7 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 	
 	@Override
 	public void deleteNavigationDetails(String navigationIds) {
-		System.out.println("In deleteNavigationDetails Method");
+		LOGGER.info("In deleteNavigationDetails Method");
 		Session session = null;
 		String hqlSelectQuery = "DELETE FROM NavigationDetails nd WHERE nd.navigationId IN :idList";
 		ArrayList<Integer> navigationIdsListInt = new ArrayList<>();
@@ -125,15 +128,15 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			txn.commit();
 		}     
 		catch(Exception e){
-			System.out.println("Error in deleteNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in deleteNavigationDetails : "+e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
 	public String runNavigationDetails(String navigationIds) {
-		System.out.println(navigationIds);
-		System.out.println("In runNavigationDetails Method");
+		LOGGER.info(navigationIds);
+		LOGGER.info("In runNavigationDetails Method");
 		String docLink="";
 		Session session = null;
 		String hqlSelectQuery = "FROM NavigationDetails nd WHERE nd.navigationId IN :idList";
@@ -151,11 +154,11 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			NavigationAgent navigationAgent = new NavigationAgent();
 			docLink = navigationAgent.doNavigation(navigationDetailsList);
 			if(!docLink.isEmpty()) {
-				System.out.println("Navigation is success");
+				LOGGER.info("Navigation is success");
 			}
 		}     
 		catch(Exception e){
-			System.out.println("Error in runNavigationDetails : "+e.getMessage());
+			LOGGER.error("Error in runNavigationDetails : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return docLink;
@@ -163,8 +166,8 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 	
 	@Override
 	public String createNavigationFile(String navigationIds) {
-		System.out.println(navigationIds);
-		System.out.println("In createNavigationFile Method");
+		LOGGER.info(navigationIds);
+		LOGGER.info("In createNavigationFile Method");
 		String docLink="";
 		Session session = null;
 		String hqlSelectQuery = "FROM NavigationDetails nd WHERE nd.navigationId IN :idList";
@@ -182,11 +185,11 @@ public class NavigationDetailsDaoImpl implements NavigationDetailsDao{
 			NavigationAgent navigationAgent = new NavigationAgent();
 			docLink = navigationAgent.createNavigationFile(navigationDetailsList);
 			if(!docLink.isEmpty()) {
-				System.out.println("Navigation is success");
+				LOGGER.info("Navigation is success");
 			}
 		}     
 		catch(Exception e){
-			System.out.println("Error in createNavigationFile : "+e.getMessage());
+			LOGGER.error("Error in createNavigationFile : "+e.getMessage());
 			e.printStackTrace();
 		}
 		return docLink;

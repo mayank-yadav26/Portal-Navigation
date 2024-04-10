@@ -31,12 +31,16 @@ public class NavigationDetailsAction {
 	private String parameters;
 	private String requestHeaders;
 	
+	static {
+		ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("spring/spring-config.xml");
+	}
+	
 	public String getNavigationDetails() {
 		LOGGER.info("Inside getNavigationDetails");
 		Map<String , Object> temp = new HashMap<String, Object>();
 		try {
-			ApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-config.xml");
-			navigationDetailsManager=(NavigationDetailsManager) context.getBean("navigationDetailsManager");
+			//ApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-config.xml");
+			//navigationDetailsManager=(NavigationDetailsManager) context.getBean("navigationDetailsManager");
 			setTotalCount();
 			ArrayList<NavigationDetails> navigationDetailsList = new ArrayList<NavigationDetails>();
 			navigationDetailsList=navigationDetailsManager.getNavigationDetailsList(getLimit(),getStart());
