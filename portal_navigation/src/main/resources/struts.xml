@@ -4,44 +4,43 @@
    "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
-	<package name="default" extends="json-default">
-		<action name="GetNavigationDetails"
-			class="com.spring.action.NavigationDetailsAction" method="getNavigationDetails">
-			<!-- default method for action is execute() -->
-			<result name="success" type="json">
-				<param name ="root">rootObj</param>
-			</result>
-			<result name="failure">/error.jsp</result>
-		</action>
-		<action name="AddNavigationDetails"
-			class="com.spring.action.NavigationDetailsAction" method="addNavigationDetails">
-			<result name="success" type="json">
-				<param name ="root">rootObj</param>
-			</result>
-		</action>
-		<action name="EditNavigationDetails"
-			class="com.spring.action.NavigationDetailsAction" method="editNavigationDetails">
-			<result name="success" type="json">
-				<param name ="root">rootObj</param>
-			</result>
-		</action>
-		<action name="DeleteNavigationDetails"
-			class="com.spring.action.NavigationDetailsAction" method="deleteNavigationDetails">
-			<result name="success" type="json">
-				<param name ="root">rootObj</param>
-			</result>
-		</action>
-		<action name="RunNavigationDetails"
-			class="com.spring.action.NavigationDetailsAction" method="runNavigationDetails">
-			<result name="success" type="json">
-				<param name ="root">rootObj</param>
-			</result>
-		</action>
-		<action name="CreateNavigationFile"
-			class="com.spring.action.NavigationDetailsAction" method="createNavigationFile">
-			<result name="success" type="json">
-				<param name ="root">rootObj</param>
-			</result>
-		</action>
-	</package>
+    <package name="navigation" extends="json-default">
+        
+        <!-- Global Results -->
+        <global-results>
+            <result name="success" type="json">
+                <param name="root">rootObj</param>
+            </result>
+            <result name="failure">/error.jsp</result>
+        </global-results>
+
+        <!-- Global Exception Handling -->
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="failure"/>
+        </global-exception-mappings>
+
+        <action name="GetNavigationDetails" 
+                class="com.spring.action.NavigationDetailsAction" 
+                method="getNavigationDetails" />
+
+        <action name="AddNavigationDetails" 
+                class="com.spring.action.NavigationDetailsAction" 
+                method="addNavigationDetails" />
+
+        <action name="EditNavigationDetails" 
+                class="com.spring.action.NavigationDetailsAction" 
+                method="editNavigationDetails" />
+
+        <action name="DeleteNavigationDetails" 
+                class="com.spring.action.NavigationDetailsAction" 
+                method="deleteNavigationDetails" />
+
+        <action name="RunNavigationDetails" 
+                class="com.spring.action.NavigationDetailsAction" 
+                method="runNavigationDetails" />
+
+        <action name="CreateNavigationFile" 
+                class="com.spring.action.NavigationDetailsAction" 
+                method="createNavigationFile" />
+    </package>
 </struts>
