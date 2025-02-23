@@ -1,12 +1,12 @@
 package com.spring.manager;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.spring.model.NavigationDetails;
 
 public interface NavigationDetailsManager {
 
-	ArrayList<NavigationDetails> getNavigationDetailsList(String limit, String start);
+	List<NavigationDetails> getNavigationDetailsList(String limit, String start);
 
 	int getTotalEntires();
 

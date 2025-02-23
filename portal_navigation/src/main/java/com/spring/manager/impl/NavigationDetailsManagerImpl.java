@@ -1,16 +1,21 @@
 package com.spring.manager.impl;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.spring.dao.NavigationDetailsDao;
 import com.spring.manager.NavigationDetailsManager;
 import com.spring.model.NavigationDetails;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class NavigationDetailsManagerImpl implements NavigationDetailsManager{
 	NavigationDetailsDao navigationDetailsDao;
 	
 	@Override
-	public ArrayList<NavigationDetails> getNavigationDetailsList(String limit, String start) {
+	public List<NavigationDetails> getNavigationDetailsList(String limit, String start) {
 		return navigationDetailsDao.getNavigationDetailsList(limit,start);
 	}
 
@@ -29,13 +34,6 @@ public class NavigationDetailsManagerImpl implements NavigationDetailsManager{
 			String requestHeaders) {
 		navigationDetailsDao.updateNavigationDetails(navigationId,navigationName,baseUrl,requestType,parameters,requestHeaders);
 		
-	}
-	public NavigationDetailsDao getNavigationDetailsDao() {
-		return navigationDetailsDao;
-	}
-
-	public void setNavigationDetailsDao(NavigationDetailsDao navigationDetailsDao) {
-		this.navigationDetailsDao = navigationDetailsDao;
 	}
 
 	@Override
